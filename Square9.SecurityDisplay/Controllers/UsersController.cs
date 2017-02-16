@@ -72,5 +72,27 @@ namespace Square9.SecurityDisplay.Controllers
 
             return Users;
         }
+
+        //(api/users/tree?DomainOrServerName={computer name/domain}&UserName={username}&Password={password})
+        [HttpGet]
+        [ActionName("permissions")]
+        public List<Models.Permissions> GetAllDatabasePermissions(string DomainOrServerName, string UserName, string Password, int DatabaseID, bool domain = true)
+
+        {
+            List<Models.Permissions> permissions = new List<Models.Permissions>();
+
+            try
+            {
+                var logic = new Square9.SecurityDisplay.Logic.UsersLogic();
+                permissions = logic.GetAllDatabasePermissions(DomainOrServerName, UserName, Password, DatabaseID, domain);
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return permissions;
+        }
     }
 }

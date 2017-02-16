@@ -10,12 +10,26 @@ namespace Square9.SecurityDisplay.Models
     public class Permissions
     {
         public int DatabaseID { get; set; }
+        public string DatabaseName { get; set; }
         public int ArchiveID { get; set; }
+        public string ArchiveName { get; set; }
         public string Group { get; set; }
         public string User { get; set; }
+        public FolderLevel FolderLevel { get; set; }
+        public DocumentLevel DocumentLevel { get; set; }
+        public ExportLevelSecurity ExportLevelSecurity { get; set; }
+        public SearchSecurity SearchSecurity { get; set; }
+
+        public Permissions()
+        {
+            FolderLevel = new FolderLevel();
+            DocumentLevel = new DocumentLevel();
+            ExportLevelSecurity = new ExportLevelSecurity();
+            SearchSecurity = new SearchSecurity();
+        }
     }
 
-    public class FolderLevel : Permissions
+    public class FolderLevel
     {
         public bool View { get; set; }
         public bool Add { get; set; }
@@ -25,9 +39,21 @@ namespace Square9.SecurityDisplay.Models
         public bool ViewHistory { get; set; }
         public bool DeleteErroredBatches { get; set; }
         public bool APIFullAccess { get; set; }
+
+        public FolderLevel()
+        {
+            View = false;
+            Add = false;
+            Delete = false;
+            Move = false;
+            ViewRevisions = false;
+            ViewHistory = false;
+            DeleteErroredBatches = false;
+            APIFullAccess = false;
+        }
     }
 
-    public class DocumentLevel : Permissions
+    public class DocumentLevel
     {
         public bool ModifyDocument { get; set; }
         public bool ModifyPages { get; set; }
@@ -36,7 +62,7 @@ namespace Square9.SecurityDisplay.Models
         public bool PublishRevisions { get; set; }
     }
 
-    public class ExportLevelSecurity : Permissions
+    public class ExportLevelSecurity
     {
         public bool Print { get; set; }
         public bool Email { get; set; }
@@ -47,7 +73,7 @@ namespace Square9.SecurityDisplay.Models
         public bool LaunchCopy { get; set; }
     }
 
-    public class SearchSecurity : Permissions
+    public class SearchSecurity
     {
         public string Searches { get; set; }
         public string DeafaultArchiveSearch { get; set; }

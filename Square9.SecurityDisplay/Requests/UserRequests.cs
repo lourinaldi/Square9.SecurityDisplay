@@ -6,6 +6,7 @@ using System.Net;
 using System.Threading;
 using RestSharp;
 using Square9.SecurityDisplay.Models;
+using Newtonsoft.Json;
 
 namespace Square9.SecurityDisplay.Requests
 {
@@ -62,6 +63,31 @@ namespace Square9.SecurityDisplay.Requests
             return SecuredUsersAndGroups;
         }
 
+        public List<String> GetUserGroups(String DomainOrServerName, String GroupName, bool domain)
+        {
+            var request = new RestRequest("api/users/groupusers?DomainOrServerName={DomainOrServerName}&GroupName={GroupName}&domain={domain}");
+            request.AddParameter("DomainOrServerName", DomainOrServerName, ParameterType.UrlSegment);
+            request.AddParameter("GroupName", GroupName, ParameterType.UrlSegment);
+            request.AddParameter("domain", domain, ParameterType.UrlSegment);
+
+            var response = ApiClient.Execute<List<String>>(request);
+            List<String> users = JsonConvert.DeserializeObject<List<String>>(response.Content);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                if (response.Content.Contains("LicenseExpired"))
+                {
+                    throw new LicenseExpiredException(response.Content);
+                }
+                else
+                {
+                    throw new ApiException(response.Content);
+                }
+            }
+
+            return users;
+        }
+
     public List<Models.SecurityNode> GetUsersAndGroupsTree(String Token)
     {
         String Secured = "tree";
@@ -86,7 +112,33 @@ namespace Square9.SecurityDisplay.Requests
 
         return SecuredUsersAndGroups;
     }
-}
+
+        public Int32 GetUserArchiveSecurity(Int32 DatabaseId, Int32 ArchiveId, String Username, String Token)
+        {
+            var request = new RestRequest("api/userAdmin/archives?db={dbID}&archive={archiveID}&username={username}&token={token}");
+            request.AddParameter("dbID", DatabaseId, ParameterType.UrlSegment);
+            request.AddParameter("archiveID", ArchiveId, ParameterType.UrlSegment);
+            request.AddParameter("username", Username, ParameterType.UrlSegment);
+            request.AddParameter("token", Token, ParameterType.UrlSegment);
+
+            var response = ApiClient.Execute(request);
+            var securityResponse = JsonConvert.DeserializeObject<Int32>(response.Content);
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                if (response.Content.Contains("LicenseExpired"))
+                {
+                    throw new LicenseExpiredException(response.Content);
+                }
+                else
+                {
+                    throw new ApiException(response.Content);
+                }
+            }
+
+            return securityResponse;
+        }
+    }
 
 public sealed class Licenses
     {
